@@ -1,0 +1,37 @@
+﻿@model IEnumerable<TeamViewModel>
+
+@{
+    ViewData["Title"] = "League";
+    int i = 1;
+}
+
+
+<table class="table">
+    <tr>
+        <th>Pozycja</th>
+        <th>Klub</th>
+        <th>RM</th>
+        <th>W</th>
+        <th>R</th>
+        <th>P</th>
+        <th>BZ</th>
+        <th>BS</th>
+        <th>RB</th>
+        <th>Pkt</th>
+    </tr>
+    @foreach (var team in Model)
+    {
+        <tr>
+            <td>@(i++)</td>
+            <td>@team.Name</td>
+            <td>@team.MatchesPlayed</td>
+            <td>@team.Wins</td>
+            <td>@team.Draws</td>
+            <td>@team.Losses</td>
+            <td>@team.GoalsScored</td>
+            <td>@team.GoalsConceded</td>
+            <td>@team.GoalsDifference</td>
+            <td>@team.Points</td>
+        </tr>
+    }
+</table>
