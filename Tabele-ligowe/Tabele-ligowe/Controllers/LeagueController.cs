@@ -9,11 +9,13 @@ namespace Tabele_ligowe.Controllers
 	public class LeagueController : Controller
 	{
 		private readonly IRepositoryService<Team> _teamRepository;
+		private readonly IRepositoryService<Match> _matchRepository;
 		private readonly ScoreBoardService _scoreboardService;
 
-		public LeagueController(IRepositoryService<Team> teamRepository,  ScoreBoardService scoreboardService)
+		public LeagueController(IRepositoryService<Team> teamRepository, IRepositoryService<Match> matchRepository, ScoreBoardService scoreboardService)
 		{
             _teamRepository = teamRepository;
+            _matchRepository = matchRepository;
             _scoreboardService = scoreboardService;
         }
 
@@ -22,17 +24,14 @@ namespace Tabele_ligowe.Controllers
 			var teams = _teamRepository
 				.GetAllRecords()
 				.Include(t => t.HomeMatches)
-				.Include(t => t.AwayMatches)
-				.ToList();
+				.Include(t => t.AwayMatches);
 
-			var matches = new List<Match>();
+			var matches = _matchRepository.FindBy(x => x.LeagueRound == 1);
 
 			var model = new ScoreboardViewModel();
 
 			foreach(var team in teams)
 			{
-				matches.AddRange(team.HomeMatches);
-
 				var teamViewModel = _scoreboardService.MapTeamViewModel(team);
 
 				model.Teams.Add(teamViewModel);
@@ -53,7 +52,27 @@ namespace Tabele_ligowe.Controllers
 			return View(model);
 		}
 
-		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [HttpPost]
+        public IActionResult UpdateMatchList(int id)
+        {
+			List<MatchViewModel> result = new List<MatchViewModel>();
+
+            var matches = _matchRepository
+				.FindBy(x => x.LeagueRound == id)
+				.Include(m => m.HomeTeam)
+				.Include(m => m.AwayTeam);
+
+            foreach (var match in matches)
+            {
+                var matchViewModel = _scoreboardService.MapMatchViewModel(match);
+
+                result.Add(matchViewModel);
+            }
+
+            return Json(result);
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 		public IActionResult Error()
 		{
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

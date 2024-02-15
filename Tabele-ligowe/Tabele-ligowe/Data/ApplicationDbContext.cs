@@ -63,6 +63,14 @@ namespace Tabele_ligowe.Data
 
             SaveChanges();
 
+            SeedLeagueRound(teams, 1);
+            SeedLeagueRound(teams, 2);
+
+            SaveChanges();
+        }
+
+        private void SeedLeagueRound(List<string> teams, int leagueRound)
+        {
             var teamsTemp = new Queue<string>(teams.Shuffle());
 
             for (int i = 0; i < teams.Count / 2; i++)
@@ -73,11 +81,10 @@ namespace Tabele_ligowe.Data
                     HomeTeamId = Teams.First(x => x.Name.Equals(teamsTemp.Dequeue())).Id,
                     AwayTeamId = Teams.First(x => x.Name.Equals(teamsTemp.Dequeue())).Id,
                     HomeTeamGoals = Random.Shared.Next(0, 7),
-                    AwayTeamGoals = Random.Shared.Next(0, 7)
+                    AwayTeamGoals = Random.Shared.Next(0, 7),
+                    LeagueRound = leagueRound
                 });
             }
-
-            SaveChanges();
         }
     }
 }

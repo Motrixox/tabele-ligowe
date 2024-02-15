@@ -12,5 +12,7 @@
 
         public int HomeTeamGoals { get; set; }
         public int AwayTeamGoals { get; set; }
+
+        public int LeagueRound { get; set; }
     }
 }

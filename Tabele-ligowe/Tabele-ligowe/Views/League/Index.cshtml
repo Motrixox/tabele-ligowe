@@ -2,7 +2,8 @@
 
 @{
     ViewData["Title"] = "League";
-    int i = 1;
+    int scoreboardPosition = 1;
+    int matchRowId = 0;
 }
 
 <div class="container">
@@ -24,7 +25,7 @@
                 @foreach (var team in Model.Teams)
                 {
                     <tr>
-                        <td>@(i++)</td>
+                        <td>@(scoreboardPosition++)</td>
                         <td>@team.Name</td>
                         <td>@team.MatchesPlayed</td>
                         <td>@team.Wins</td>
@@ -39,6 +40,14 @@
             </table>
         </div>
         <div class="col-4">
+            <select id="round" class="form-select">
+                <option value="1" selected>
+                    Kolejka 1
+                </option>
+                <option value="2">
+                    Kolejka 2
+                </option>
+            </select>
             <table class="table table-striped">
                 <tr>
                     <th>Gospodarze</th>
@@ -47,10 +56,10 @@
                 </tr>
                 @foreach (var team in Model.Matches)
                 {
-                    <tr>
-                        <td>@team.HomeTeamName</td>
-                        <td>@team.HomeTeamGoals : @team.AwayTeamGoals</td>
-                        <td>@team.AwayTeamName</td>
+                    <tr id="matchRow@(matchRowId++)">
+                        <td id="homeTeamName">@team.HomeTeamName</td>
+                        <td id="score">@team.HomeTeamGoals : @team.AwayTeamGoals</td>
+                        <td id="awayTeamName">@team.AwayTeamName</td>
                     </tr>
                 }
             </table>
@@ -58,4 +67,30 @@
     </div>
 </div>
 
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $('#round').change(function () {
+            $.ajax({
+                url: '/League/UpdateMatchList',
+                type: 'POST',
+                data: { id: $('#round').val() },
+                success: SetMatches
+            });
+        });
+    });
+
+    function SetMatches(data)
+    {
+        console.log(data[0].homeTeamName);
+        for (var i = 0; i < @matchRowId; i++)
+        {
+            $('#matchRow' + i).children('#homeTeamName').text(data[i].homeTeamName);
+            $('#matchRow' + i).children('#score').text(data[i].homeTeamGoals + " : " + data[i].awayTeamGoals);
+            $('#matchRow' + i).children('#awayTeamName').text(data[i].awayTeamName);
+        }
+    }
+</script>
 
