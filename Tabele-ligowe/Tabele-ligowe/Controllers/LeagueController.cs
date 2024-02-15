@@ -25,16 +25,27 @@ namespace Tabele_ligowe.Controllers
 				.Include(t => t.AwayMatches)
 				.ToList();
 
-            var model = new List<TeamViewModel>();
+			var matches = new List<Match>();
+
+			var model = new ScoreboardViewModel();
 
 			foreach(var team in teams)
 			{
+				matches.AddRange(team.HomeMatches);
+
 				var teamViewModel = _scoreboardService.MapTeamViewModel(team);
 
-				model.Add(teamViewModel);
+				model.Teams.Add(teamViewModel);
 			}
 
-			model = model.OrderByDescending(t => t.Points)
+			foreach(var match in matches)
+			{
+				var matchViewModel = _scoreboardService.MapMatchViewModel(match);
+
+				model.Matches.Add(matchViewModel);
+			}
+
+			model.Teams = model.Teams.OrderByDescending(t => t.Points)
 				.ThenByDescending(t => t.GoalsDifference)
 				.ThenByDescending(t => t.GoalsScored)
 				.ToList();

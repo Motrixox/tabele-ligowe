@@ -1,37 +1,61 @@
-﻿@model IEnumerable<TeamViewModel>
+﻿@model ScoreboardViewModel
 
 @{
     ViewData["Title"] = "League";
     int i = 1;
 }
 
+<div class="container">
+    <div class="row">
+        <div class="col-8">
+            <table class="table table-striped">
+                <tr>
+                    <th>Pozycja</th>
+                    <th>Klub</th>
+                    <th>RM</th>
+                    <th>W</th>
+                    <th>R</th>
+                    <th>P</th>
+                    <th>BZ</th>
+                    <th>BS</th>
+                    <th>RB</th>
+                    <th>Pkt</th>
+                </tr>
+                @foreach (var team in Model.Teams)
+                {
+                    <tr>
+                        <td>@(i++)</td>
+                        <td>@team.Name</td>
+                        <td>@team.MatchesPlayed</td>
+                        <td>@team.Wins</td>
+                        <td>@team.Draws</td>
+                        <td>@team.Losses</td>
+                        <td>@team.GoalsScored</td>
+                        <td>@team.GoalsConceded</td>
+                        <td>@team.GoalsDifference</td>
+                        <td>@team.Points</td>
+                    </tr>
+                }
+            </table>
+        </div>
+        <div class="col-4">
+            <table class="table table-striped">
+                <tr>
+                    <th>Gospodarze</th>
+                    <th>Wynik</th>
+                    <th>Przyjezdni</th>
+                </tr>
+                @foreach (var team in Model.Matches)
+                {
+                    <tr>
+                        <td>@team.HomeTeamName</td>
+                        <td>@team.HomeTeamGoals : @team.AwayTeamGoals</td>
+                        <td>@team.AwayTeamName</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>
 
-<table class="table">
-    <tr>
-        <th>Pozycja</th>
-        <th>Klub</th>
-        <th>RM</th>
-        <th>W</th>
-        <th>R</th>
-        <th>P</th>
-        <th>BZ</th>
-        <th>BS</th>
-        <th>RB</th>
-        <th>Pkt</th>
-    </tr>
-    @foreach (var team in Model)
-    {
-        <tr>
-            <td>@(i++)</td>
-            <td>@team.Name</td>
-            <td>@team.MatchesPlayed</td>
-            <td>@team.Wins</td>
-            <td>@team.Draws</td>
-            <td>@team.Losses</td>
-            <td>@team.GoalsScored</td>
-            <td>@team.GoalsConceded</td>
-            <td>@team.GoalsDifference</td>
-            <td>@team.Points</td>
-        </tr>
-    }
-</table>
+

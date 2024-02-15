@@ -58,5 +58,18 @@ namespace Tabele_ligowe.Services
 
             return result;
         }
+
+        public MatchViewModel MapMatchViewModel(Match match)
+        {
+            MatchViewModel result = new MatchViewModel();
+
+            result.HomeTeamName = match.HomeTeam.Name;
+            result.HomeTeamGoals = match.HomeTeamGoals;
+
+            result.AwayTeamName = match.AwayTeam.Name;
+            result.AwayTeamGoals = match.AwayTeamGoals;
+
+            return result;
+        }
     }
 }
