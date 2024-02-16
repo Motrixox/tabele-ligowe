@@ -72,6 +72,26 @@ namespace Tabele_ligowe.Controllers
             return Json(result);
         }
 
+        [HttpPost]
+        public IActionResult GetMatchesForTeam(string name)
+        {
+			List<MatchViewModel> result = new List<MatchViewModel>();
+
+            var matches = _matchRepository
+				.FindBy(x => x.HomeTeam.Name.Equals(name) || x.AwayTeam.Name.Equals(name))
+				.Include(m => m.HomeTeam)
+				.Include(m => m.AwayTeam);
+
+            foreach (var match in matches)
+            {
+                var matchViewModel = _scoreboardService.MapMatchViewModel(match);
+
+                result.Add(matchViewModel);
+            }
+
+            return Json(result);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 		public IActionResult Error()
 		{

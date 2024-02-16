@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "League";
     int scoreboardPosition = 1;
+    int teamId = 0;
     int matchRowId = 0;
 }
 
@@ -26,7 +27,7 @@
                 {
                     <tr>
                         <td>@(scoreboardPosition++)</td>
-                        <td>@team.Name</td>
+                        <td class="pointer" id="teamName@(teamId)" onclick="ShowMatches(@(teamId++))">@team.Name</td>
                         <td>@team.MatchesPlayed</td>
                         <td>@team.Wins</td>
                         <td>@team.Draws</td>
@@ -48,6 +49,7 @@
                     Kolejka 2
                 </option>
             </select>
+
             <table class="table table-striped">
                 <tr>
                     <th>Gospodarze</th>
@@ -63,6 +65,23 @@
                     </tr>
                 }
             </table>
+
+            <div id="chosenTeamMatches" hidden="true">
+                <div id="team">Mecze ligowe dla drużyny: </div>
+
+                <table id="teamMatches" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Gospodarze</th>
+                            <th>Wynik</th>
+                            <th>Przyjezdni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -82,9 +101,38 @@
         });
     });
 
+    function ShowMatches(id) 
+    { 
+        $('#team').text("Mecze ligowe dla drużyny:  " + $('#teamName' + id).text());
+
+        $.ajax({
+            url: '/League/GetMatchesForTeam',
+            type: 'POST',
+            data: { name: $('#teamName' + id).text() },
+            success: SetMatchesForTeam
+        });
+    }
+
+    function SetMatchesForTeam(data)
+    {
+        $('#chosenTeamMatches').attr('hidden', false);
+        $('#teamMatches tbody').empty();
+
+        var tableBody = $('#teamMatches tbody');
+
+        data.forEach(function (item) {
+            var row = "<tr>" +
+                "<td>" + item.homeTeamName + "</td>" +
+                "<td>" + (item.homeTeamGoals + " : " + item.awayTeamGoals) + "</td>" +
+                "<td>" + item.awayTeamName + "</td>" +
+                "</tr>";
+
+            tableBody.append(row);
+        });
+    }
+
     function SetMatches(data)
     {
-        console.log(data[0].homeTeamName);
         for (var i = 0; i < @matchRowId; i++)
         {
             $('#matchRow' + i).children('#homeTeamName').text(data[i].homeTeamName);
@@ -93,4 +141,10 @@
         }
     }
 </script>
+
+<style>
+    .pointer:hover {
+        cursor: pointer;
+    }
+</style>
 
