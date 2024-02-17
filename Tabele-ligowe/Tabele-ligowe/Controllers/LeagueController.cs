@@ -10,55 +10,93 @@ namespace Tabele_ligowe.Controllers
 	{
 		private readonly IRepositoryService<Team> _teamRepository;
 		private readonly IRepositoryService<Match> _matchRepository;
+		private readonly IRepositoryService<League> _leagueRepository;
+		private readonly IRepositoryService<Season> _seasonRepository;
 		private readonly ScoreBoardService _scoreboardService;
 
-		public LeagueController(IRepositoryService<Team> teamRepository, IRepositoryService<Match> matchRepository, ScoreBoardService scoreboardService)
+		public LeagueController(IRepositoryService<Team> teamRepository, 
+			IRepositoryService<Match> matchRepository, 
+			IRepositoryService<League> leagueRepository, 
+			IRepositoryService<Season> seasonRepository, 
+			ScoreBoardService scoreboardService)
 		{
             _teamRepository = teamRepository;
             _matchRepository = matchRepository;
+            _leagueRepository = leagueRepository;
+            _seasonRepository = seasonRepository;
             _scoreboardService = scoreboardService;
         }
 
-		public IActionResult Index()
-		{
-			var teams = _teamRepository
-				.GetAllRecords()
-				.Include(t => t.HomeMatches)
-				.Include(t => t.AwayMatches);
+        public IActionResult Index(Guid selectedLeagueId, Guid selectedSeasonId)
+        {
+            if (selectedLeagueId.Equals(Guid.Empty))
+            {
+                selectedLeagueId = _leagueRepository.GetAllRecords().FirstOrDefault().Id;
+            }
 
-			var matches = _matchRepository.FindBy(x => x.LeagueRound == 1);
+            if (selectedSeasonId.Equals(Guid.Empty))
+            {
+                selectedSeasonId = _seasonRepository.FindBy(x => x.LeagueId.Equals(selectedLeagueId)).FirstOrDefault().Id;
+            }
 
-			var model = new ScoreboardViewModel();
+            var leagues = _leagueRepository.GetAllRecords();
+            var seasons = _seasonRepository.FindBy(x => x.LeagueId.Equals(selectedLeagueId));
 
-			foreach(var team in teams)
-			{
-				var teamViewModel = _scoreboardService.MapTeamViewModel(team);
+            var selectedLeague = leagues.FirstOrDefault(l => l.Id == selectedLeagueId);
+            var selectedSeason = seasons.FirstOrDefault(s => s.Id == selectedSeasonId);
 
-				model.Teams.Add(teamViewModel);
-			}
+            var teams = _teamRepository
+                .FindBy(t => t.Seasons.Contains(selectedSeason))
+                .Include(t => t.HomeMatches)
+                .Include(t => t.AwayMatches);
 
-			foreach(var match in matches)
-			{
-				var matchViewModel = _scoreboardService.MapMatchViewModel(match);
+            var matches = _matchRepository
+                .FindBy(x => x.LeagueRound == 1 && x.SeasonId == selectedSeason.Id);
 
-				model.Matches.Add(matchViewModel);
-			}
+            var numOfRounds = _matchRepository
+                .FindBy(x => x.SeasonId == selectedSeason.Id)
+                .OrderByDescending(x => x.LeagueRound)
+                .First()
+                .LeagueRound;
 
-			model.Teams = model.Teams.OrderByDescending(t => t.Points)
-				.ThenByDescending(t => t.GoalsDifference)
-				.ThenByDescending(t => t.GoalsScored)
-				.ToList();
+            var model = new ScoreboardViewModel
+            {
+                SelectedLeagueId = selectedLeague.Id,
+                SelectedSeasonId = selectedSeason.Id,
+                Leagues = leagues.ToList(),
+                Seasons = seasons.ToList(),
+                NumOfRounds = numOfRounds
+            };
 
-			return View(model);
-		}
+            foreach (var team in teams)
+            {
+                var teamViewModel = _scoreboardService.MapTeamViewModel(team, selectedSeason);
+                model.Teams.Add(teamViewModel);
+            }
+
+            foreach (var match in matches)
+            {
+
+                var matchViewModel = _scoreboardService.MapMatchViewModel(match);
+                model.Matches.Add(matchViewModel);
+            }
+
+            model.Teams = model.Teams.OrderByDescending(t => t.Points)
+                .ThenByDescending(t => t.GoalsDifference)
+                .ThenByDescending(t => t.GoalsScored)
+                .ToList();
+
+            return View(model);
+        }
+
 
         [HttpPost]
-        public IActionResult UpdateMatchList(int id)
+        public IActionResult UpdateMatchList(int round, Guid selectedSeasonId)
         {
 			List<MatchViewModel> result = new List<MatchViewModel>();
 
             var matches = _matchRepository
-				.FindBy(x => x.LeagueRound == id)
+				.FindBy(x => x.LeagueRound == round && x.SeasonId == selectedSeasonId)
 				.Include(m => m.HomeTeam)
 				.Include(m => m.AwayTeam);
 
@@ -73,7 +111,7 @@ namespace Tabele_ligowe.Controllers
         }
 
         [HttpPost]
-        public IActionResult GetMatchesForTeam(string name)
+        public IActionResult GetMatchesForTeam(string name, Guid selectedSeasonId)
         {
 			List<MatchViewModel> result = new List<MatchViewModel>();
 
@@ -84,6 +122,8 @@ namespace Tabele_ligowe.Controllers
 
             foreach (var match in matches)
             {
+                if (!match.SeasonId.Equals(selectedSeasonId)) continue;
+
                 var matchViewModel = _scoreboardService.MapMatchViewModel(match);
 
                 result.Add(matchViewModel);
