@@ -10,6 +10,9 @@
         public Guid AwayTeamId { get; set; }
         public Team AwayTeam { get; set; }
 
+        public Guid SeasonId { get; set; }
+        public Season Season { get; set; }
+
         public int HomeTeamGoals { get; set; }
         public int AwayTeamGoals { get; set; }
 
