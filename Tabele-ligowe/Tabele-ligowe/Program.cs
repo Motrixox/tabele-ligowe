@@ -19,6 +19,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IRepositoryService<Team>, RepositoryService<Team>>();
 builder.Services.AddScoped<IRepositoryService<Match>, RepositoryService<Match>>();
+builder.Services.AddScoped<IRepositoryService<League>, RepositoryService<League>>();
+builder.Services.AddScoped<IRepositoryService<Season>, RepositoryService<Season>>();
 builder.Services.AddSingleton<ScoreBoardService, ScoreBoardService>();
 
 var app = builder.Build();
