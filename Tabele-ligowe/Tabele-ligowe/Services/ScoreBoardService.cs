@@ -6,12 +6,14 @@ namespace Tabele_ligowe.Services
     {
         public ScoreBoardService() { }
 
-        public TeamViewModel MapTeamViewModel(Team team)
+        public TeamViewModel MapTeamViewModel(Team team, Season season)
         {
             var result = new TeamViewModel{ Name = team.Name };
 
             foreach (var match in team.HomeMatches)
             {
+                if (!match.Season.Equals(season)) continue;
+
                 result.GoalsScored += match.HomeTeamGoals;
                 result.GoalsConceded += match.AwayTeamGoals;
                 result.MatchesPlayed += 1;
@@ -34,6 +36,8 @@ namespace Tabele_ligowe.Services
 
             foreach (var match in team.AwayMatches)
             {
+                if (!match.Season.Equals(season)) continue;
+
                 result.GoalsScored += match.AwayTeamGoals;
                 result.GoalsConceded += match.HomeTeamGoals;
                 result.MatchesPlayed += 1;
