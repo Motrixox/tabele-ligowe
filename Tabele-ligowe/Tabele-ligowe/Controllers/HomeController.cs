@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using Tabele_ligowe.Models;
+using Tabele_ligowe.ViewModels;
 
 namespace Tabele_ligowe.Controllers
 {

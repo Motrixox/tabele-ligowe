@@ -3,10 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using Tabele_ligowe.Models;
 using Tabele_ligowe.Services;
+using Tabele_ligowe.ViewModels;
 
 namespace Tabele_ligowe.Controllers
 {
-	public class LeagueController : Controller
+    public class LeagueController : Controller
 	{
 		private readonly IRepositoryService<Team> _teamRepository;
 		private readonly IRepositoryService<Match> _matchRepository;

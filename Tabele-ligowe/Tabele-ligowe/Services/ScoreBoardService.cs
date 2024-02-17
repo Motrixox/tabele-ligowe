@@ -1,4 +1,5 @@
 ﻿using Tabele_ligowe.Models;
+using Tabele_ligowe.ViewModels;
 
 namespace Tabele_ligowe.Services
 {

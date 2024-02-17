@@ -1,4 +1,4 @@
-﻿namespace Tabele_ligowe.Models
+﻿namespace Tabele_ligowe.ViewModels
 {
     public class TeamViewModel
     {
