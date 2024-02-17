@@ -66,6 +66,9 @@
                     </tr>
                 }
             </table>
+            <p>
+                Kliknij nazwę drużyny w celu wyświetlenia jej meczów w danym sezonie.
+            </p>
         </div>
         <div class="col-4">
             <select id="round" class="form-select">
@@ -129,7 +132,7 @@
     $(document).ready(function () {
         $('#round').change(function () {
             $.ajax({
-                url: '/League/UpdateMatchList',
+                url: '/Scoreboard/UpdateMatchList',
                 type: 'POST',
                 data: { 
                     round: $('#round').val(),
@@ -144,7 +147,7 @@
         $('#league').change(function () {
             var selectedLeagueId = $('#league').val();
 
-            window.location.href = '/League/Index?selectedLeagueId=' + selectedLeagueId;
+            window.location.href = '/Scoreboard/Index?selectedLeagueId=' + selectedLeagueId;
         });
     });
 
@@ -153,7 +156,7 @@
             var selectedLeagueId = $('#league').val();
             var selectedSeasonId = $('#season').val();
 
-            window.location.href = '/League/Index?selectedLeagueId=' + selectedLeagueId + "&selectedSeasonId=" + selectedSeasonId;
+            window.location.href = '/Scoreboard/Index?selectedLeagueId=' + selectedLeagueId + "&selectedSeasonId=" + selectedSeasonId;
         });
     });
 
@@ -162,7 +165,7 @@
         $('#team').text("Mecze ligowe dla drużyny:  " + $('#teamName' + id).text());
 
         $.ajax({
-            url: '/League/GetMatchesForTeam',
+            url: '/Scoreboard/GetMatchesForTeam',
             type: 'POST',
             data: { 
                 name: $('#teamName' + id).text(),

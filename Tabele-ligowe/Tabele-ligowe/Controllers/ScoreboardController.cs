@@ -7,7 +7,7 @@ using Tabele_ligowe.ViewModels;
 
 namespace Tabele_ligowe.Controllers
 {
-    public class LeagueController : Controller
+    public class ScoreboardController : Controller
 	{
 		private readonly IRepositoryService<Team> _teamRepository;
 		private readonly IRepositoryService<Match> _matchRepository;
@@ -15,7 +15,7 @@ namespace Tabele_ligowe.Controllers
 		private readonly IRepositoryService<Season> _seasonRepository;
 		private readonly ScoreBoardService _scoreboardService;
 
-		public LeagueController(IRepositoryService<Team> teamRepository, 
+		public ScoreboardController(IRepositoryService<Team> teamRepository, 
 			IRepositoryService<Match> matchRepository, 
 			IRepositoryService<League> leagueRepository, 
 			IRepositoryService<Season> seasonRepository, 
