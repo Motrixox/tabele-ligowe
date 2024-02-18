@@ -11,6 +11,7 @@ namespace Tabele_ligowe.Data
 		public DbSet<Season> Seasons { get; set; }
 		public DbSet<Team> Teams { get; set; }
 		public DbSet<Match> Matches { get; set; }
+		public DbSet<UserFavoriteTeam> UserFavoriteTeam { get; set; }
 
 		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
 			: base(options)
