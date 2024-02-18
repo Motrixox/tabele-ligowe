@@ -5,5 +5,6 @@
         public Guid Id { get; set; }
         public string Username { get; set; }
         public Guid TeamId { get; set; }
+        public Team Team { get; set; }
     }
 }

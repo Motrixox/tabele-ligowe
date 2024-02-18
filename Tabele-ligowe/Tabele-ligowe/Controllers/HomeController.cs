@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using Tabele_ligowe.Models;
 using Tabele_ligowe.Services;
@@ -8,18 +10,11 @@ namespace Tabele_ligowe.Controllers
 {
 	public class HomeController : Controller
 	{
-		private readonly ILogger<HomeController> _logger;
 		private readonly IRepositoryService<UserFavoriteTeam> _userFavoriteTeamRepository;
-		private readonly IRepositoryService<Team> _teamRepository;
 
-		public HomeController(ILogger<HomeController> logger,
-            IRepositoryService<UserFavoriteTeam> userFavoriteTeamRepository,
-            IRepositoryService<Team> teamRepository)
+		public HomeController(IRepositoryService<UserFavoriteTeam> userFavoriteTeamRepository)
 		{
-			_logger = logger;
 			_userFavoriteTeamRepository = userFavoriteTeamRepository;
-            _teamRepository = teamRepository;
-
         }
 
 		public IActionResult Index()
@@ -27,6 +22,7 @@ namespace Tabele_ligowe.Controllers
 			return View();
 		}
 
+		[Authorize]
 		public IActionResult Favorites()
 		{
             var username = User?.Identity?.Name;
@@ -35,12 +31,14 @@ namespace Tabele_ligowe.Controllers
 
             if (username != null)
 			{
-				var favoriteTeams = _userFavoriteTeamRepository.FindBy(x => x.Username.Equals(username)).ToList();
+				var favoriteTeams = _userFavoriteTeamRepository
+					.FindBy(x => x.Username.Equals(username))
+					.Include(x => x.Team)
+					.ToList();
 
 				foreach (var favTeam in favoriteTeams)
 				{
-					var team = _teamRepository.GetSingle(favTeam.TeamId);
-					model.Add(new FavoriteTeamViewModel{ Name = team.Name });
+					model.Add(new FavoriteTeamViewModel{ Name = favTeam.Team.Name });
 				}
             }
 

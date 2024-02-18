@@ -22,7 +22,7 @@ builder.Services.AddScoped<IRepositoryService<Match>, RepositoryService<Match>>(
 builder.Services.AddScoped<IRepositoryService<League>, RepositoryService<League>>();
 builder.Services.AddScoped<IRepositoryService<Season>, RepositoryService<Season>>();
 builder.Services.AddScoped<IRepositoryService<UserFavoriteTeam>, RepositoryService<UserFavoriteTeam>>();
-builder.Services.AddScoped<ScoreBoardService, ScoreBoardService>();
+builder.Services.AddScoped<IScoreBoardService, ScoreBoardService>();
 
 var app = builder.Build();
 
