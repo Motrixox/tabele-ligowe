@@ -5,12 +5,24 @@ namespace Tabele_ligowe.Services
 {
     public class ScoreBoardService
     {
-        public ScoreBoardService() { }
-
-        public TeamViewModel MapTeamViewModel(Team team, Season season)
+        private readonly IRepositoryService<UserFavoriteTeam> _userFavoriteTeamRepository;
+        public ScoreBoardService(IRepositoryService<UserFavoriteTeam> userFavoriteTeamRepository)
         {
-            var result = new TeamViewModel{ Name = team.Name };
+            _userFavoriteTeamRepository = userFavoriteTeamRepository;
+        }
 
+        public TeamViewModel MapTeamViewModel(Team team, Season season, string username)
+        {
+            var userFavoriteTeam = _userFavoriteTeamRepository
+                .FindBy(x => x.Username.Equals(username) && x.TeamId.Equals(team.Id)).FirstOrDefault();
+
+            bool favorite = false;
+
+            if (userFavoriteTeam != null)
+                favorite = true;
+
+            var result = new TeamViewModel{ Id = team.Id, Name = team.Name, Favorite = favorite };
+            
             foreach (var match in team.HomeMatches)
             {
                 if (!match.Season.Equals(season)) continue;

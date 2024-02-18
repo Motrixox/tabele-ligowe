@@ -13,23 +13,28 @@ namespace Tabele_ligowe.Controllers
 		private readonly IRepositoryService<Match> _matchRepository;
 		private readonly IRepositoryService<League> _leagueRepository;
 		private readonly IRepositoryService<Season> _seasonRepository;
+		private readonly IRepositoryService<UserFavoriteTeam> _userFavoriteTeamRepository;
 		private readonly ScoreBoardService _scoreboardService;
 
 		public ScoreboardController(IRepositoryService<Team> teamRepository, 
 			IRepositoryService<Match> matchRepository, 
 			IRepositoryService<League> leagueRepository, 
 			IRepositoryService<Season> seasonRepository, 
+			IRepositoryService<UserFavoriteTeam> userFavoriteTeamRepository, 
 			ScoreBoardService scoreboardService)
 		{
             _teamRepository = teamRepository;
             _matchRepository = matchRepository;
             _leagueRepository = leagueRepository;
             _seasonRepository = seasonRepository;
+            _userFavoriteTeamRepository = userFavoriteTeamRepository;
             _scoreboardService = scoreboardService;
         }
 
         public IActionResult Index(Guid selectedLeagueId, Guid selectedSeasonId)
         {
+            var username = User?.Identity?.Name;
+
             if (selectedLeagueId.Equals(Guid.Empty))
             {
                 selectedLeagueId = _leagueRepository.GetAllRecords().FirstOrDefault().Id;
@@ -71,7 +76,7 @@ namespace Tabele_ligowe.Controllers
 
             foreach (var team in teams)
             {
-                var teamViewModel = _scoreboardService.MapTeamViewModel(team, selectedSeason);
+                var teamViewModel = _scoreboardService.MapTeamViewModel(team, selectedSeason, username);
                 model.Teams.Add(teamViewModel);
             }
 
@@ -131,6 +136,29 @@ namespace Tabele_ligowe.Controllers
             }
 
             return Json(result);
+        }
+
+        [HttpPost]
+        public IActionResult ToggleTeamFavorite(Guid teamId)
+        {
+            var username = User?.Identity?.Name;
+
+            if (username == null)
+                return BadRequest("User not logged in");
+
+            var userFavoriteTeam = _userFavoriteTeamRepository
+                .FindBy(x => x.Username.Equals(username) && x.TeamId.Equals(teamId)).FirstOrDefault();
+
+            if(userFavoriteTeam == null)
+            {
+                _userFavoriteTeamRepository.Add(new UserFavoriteTeam { Id = new Guid(), TeamId = teamId, Username = username });
+            }
+            else
+            {
+                _userFavoriteTeamRepository.Delete(userFavoriteTeam);
+            }
+
+            return Ok();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

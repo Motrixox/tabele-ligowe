@@ -40,6 +40,10 @@
             <table class="table table-striped">
                 <tr>
                     <th>Pozycja</th>
+                    @if(User != null)
+                    {
+                        <th></th>
+                    }
                     <th>Klub</th>
                     <th>RM</th>
                     <th>W</th>
@@ -54,6 +58,19 @@
                 {
                     <tr>
                         <td>@(scoreboardPosition++)</td>
+                        @if (User?.Identity?.IsAuthenticated ?? false)
+                        {
+                            <td>
+                                @if(!team.Favorite)
+                                {
+                                    <button onclick="ToggleTeamFavorite('@team.Id')">Dodaj do ulubionych</button>
+                                }
+                                else
+                                {
+                                    <button onclick="ToggleTeamFavorite('@team.Id')">Usuń z ulubionych</button>
+                                }
+                            </td>
+                        }
                         <td class="pointer" id="teamName@(teamId)" onclick="ShowMatches(@(teamId++))">@team.Name</td>
                         <td>@team.MatchesPlayed</td>
                         <td>@team.Wins</td>
@@ -105,7 +122,7 @@
                 }
             </table>
 
-            <div id="chosenTeamMatches" hidden="true">
+            <div id="chosenTeamMatches" hidden>
                 <div id="team">Mecze ligowe dla drużyny: </div>
 
                 <table id="teamMatches" class="table table-striped">
@@ -159,6 +176,20 @@
             window.location.href = '/Scoreboard/Index?selectedLeagueId=' + selectedLeagueId + "&selectedSeasonId=" + selectedSeasonId;
         });
     });
+
+    function ToggleTeamFavorite(teamId)
+    {
+        $.ajax({
+            url: '/Scoreboard/ToggleTeamFavorite',
+            type: 'POST',
+            data: {
+                teamId: teamId
+            },
+            success: function(){
+                location.reload();
+            }
+        });
+    }
 
     function ShowMatches(id) 
     { 
