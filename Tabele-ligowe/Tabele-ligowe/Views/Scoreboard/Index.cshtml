@@ -40,7 +40,7 @@
             <table class="table table-striped">
                 <tr>
                     <th>Pozycja</th>
-                    @if(User != null)
+                    @if (User?.Identity?.IsAuthenticated ?? false)
                     {
                         <th></th>
                     }
