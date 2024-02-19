@@ -15,3 +15,11 @@
 - panel administratora pozwalający na manipulację danymi
 - rozbudowaną obsługę błędów
 - testy jednostkowe
+
+## Zrzuty ekranu:
+
+![image 1](https://github.com/Motrixox/tabele-ligowe/blob/main/Screenshots/1.PNG?raw=true)
+![image 2](https://github.com/Motrixox/tabele-ligowe/blob/main/Screenshots/2.PNG?raw=true)
+![image 3](https://github.com/Motrixox/tabele-ligowe/blob/main/Screenshots/3.PNG?raw=true)
+![image 4](https://github.com/Motrixox/tabele-ligowe/blob/main/Screenshots/4.PNG?raw=true)
+![image 5](https://github.com/Motrixox/tabele-ligowe/blob/main/Screenshots/5.PNG?raw=true)
